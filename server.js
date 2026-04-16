@@ -16,26 +16,21 @@ app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database configuration
-const dbConfig = {
+const db = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
-};
-const { Parser } = require('json2csv'); 
+});
 
-let db;
-
-// Initialize database connection
 async function initDatabase() {
   try {
-    db = await mysql.createConnection(dbConfig);
-    console.log('✅ Connected to MySQL database');
     const [rows] = await db.execute('SELECT 1 as test');
-    console.log('✅ Database connection test successful');
+    console.log('✅ Database pool connected successfully');
   } catch (error) {
     console.error('❌ Database connection failed:', error);
     process.exit(1);
