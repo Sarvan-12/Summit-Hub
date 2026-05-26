@@ -454,9 +454,29 @@ const uploadStorage = multer.diskStorage({
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
-const upload = multer({ storage: uploadStorage });
+const upload = multer({
+    storage: uploadStorage,
+    limits: { fileSize: 25 * 1024 * 1024 }, // 25MB limit
+    fileFilter: (req, file, cb) => {
+        const allowedExtensions = ['.pptx', '.ppt', '.pdf', '.odp'];
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (!allowedExtensions.includes(ext)) {
+            return cb(new Error('Only presentation files (.ppt, .pptx, .pdf, .odp) are allowed!'));
+        }
+        cb(null, true);
+    }
+});
 
-app.post('/api/upload/presentation', upload.single('presentation'), async (req, res) => {
+app.post('/api/upload/presentation', (req, res, next) => {
+    upload.single('presentation')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ error: `Upload error: ${err.message}` });
+        } else if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+        next();
+    });
+}, async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
