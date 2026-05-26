@@ -777,8 +777,10 @@ app.post('/api/reset', async (req, res) => {
 
 app.post('/api/admin/login', async (req, res) => {
     const { username, password } = req.body;
-    // Replace this with your real admin check (DB or env)
-    if (username === 'admin' && password === 'admin123') {
+    const adminUser = process.env.ADMIN_USER || 'admin';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    
+    if (username === adminUser && password === adminPassword) {
         res.json({ success: true });
     } else {
         res.status(401).json({ success: false, error: 'Invalid credentials' });
