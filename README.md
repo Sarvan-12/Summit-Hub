@@ -43,10 +43,10 @@ Summit Hub addresses these issues by offering a unified platform where users can
 
 ## Tech Stack
 
-* Frontend: (Add your framework, e.g., React / HTML / CSS / JS)
-* Backend: (Add your backend, e.g., Node.js / Express)
-* Database: (Add if used, e.g., MongoDB / Firebase)
-* Deployment: Railway / Vercel
+* Frontend: Vanilla HTML5, CSS3 (Modern Flexbox/Grid, custom variables), and ES6 Javascript
+* Backend: Node.js, Express, Multer (secure file uploads), and json2csv (schedule exports)
+* Database: MySQL (relational constraints, connection pooling via `mysql2/promise`)
+* Deployment: Railway / Vercel ready
 
 ---
 
@@ -54,14 +54,22 @@ Summit Hub addresses these issues by offering a unified platform where users can
 
 ```
 Summit-Hub/
-│── frontend/
-│── backend/
-│── public/
-│── config/
-│── ...
+├── database/
+│   └── setup.sql           # Database schema definition and seed data
+├── public/                 # Static frontend client code
+│   ├── admin-login.html    # Admin login page
+│   ├── admin.html          # Admin dashboard (schedule & speaker manager)
+│   ├── speaker-login.html  # Speaker authentication
+│   ├── speaker-dashboard.html # Speaker slide upload & profile manager
+│   ├── index.html          # Main attendee schedule display
+│   ├── style.css           # App stylesheet (Flexbox/Grid structure)
+│   └── *.js                # Client logic handlers
+├── uploads/                # Structured repository for uploaded slide files
+├── .env                    # Application config & secrets (ignored by git)
+├── server.js               # Central Node.js Express server & REST API
+├── test-system.js          # Browser automated system testing suite
+└── package.json            # Dependencies and start scripts
 ```
-
-(Add or modify based on your actual structure)
 
 ---
 
