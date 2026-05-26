@@ -152,6 +152,17 @@ app.get('/api/speakers', async (req, res) => {
 app.post('/api/speakers', async (req, res) => {
     try {
         const { full_name, email, phone, title, bio } = req.body;
+        
+        // Server-side input validation
+        if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2) {
+            return res.status(400).json({ error: 'Full name must be at least 2 characters long' });
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || typeof email !== 'string' || !emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Please provide a valid email address' });
+        }
+
         const [rows] = await db.execute('SELECT MAX(speaker_id) AS maxId FROM speakers');
         const nextId = (rows[0].maxId || 0) + 1;
         const speakerCode = 'SP' + String(nextId).padStart(3, '0');
@@ -162,7 +173,7 @@ app.post('/api/speakers', async (req, res) => {
         );
         res.json({ success: true, speaker_code: speakerCode });
     } catch (err) {
-        console.error('Add speaker error:', err); // <--- Add this line
+        console.error('Add speaker error:', err);
         res.status(500).json({ error: 'Failed to add speaker' });
     }
 });
@@ -624,6 +635,17 @@ app.delete('/api/speakers/:id', async (req, res) => {
 app.put('/api/speakers/:id', async (req, res) => {
     try {
         const { full_name, email, phone, title, bio } = req.body;
+        
+        // Server-side input validation
+        if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2) {
+            return res.status(400).json({ error: 'Full name must be at least 2 characters long' });
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || typeof email !== 'string' || !emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Please provide a valid email address' });
+        }
+
         const [result] = await db.execute(
             `UPDATE speakers SET full_name=?, email=?, phone=?, title=?, bio=? WHERE speaker_id=?`,
             [full_name, email, phone, title, bio, req.params.id]
