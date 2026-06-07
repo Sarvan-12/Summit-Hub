@@ -208,6 +208,9 @@ class ConferenceSchedule {
                         <span>📅 Day ${session.day_number}</span>
                         <span>⏰ ${this.getSessionDuration(session.start_time, session.end_time)}</span>
                     </div>
+                    <div>
+                        <span class="stamp-badge stamp-${session.status || 'confirmed'}">${session.status || 'confirmed'}</span>
+                    </div>
                 </div>
             </div>
         `).join('');
