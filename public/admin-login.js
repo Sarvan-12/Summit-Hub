@@ -21,6 +21,7 @@ document.getElementById('adminLoginForm').addEventListener('submit', async funct
 
         if (res.ok && data.success) {
             localStorage.setItem('adminAuth', 'true');
+            localStorage.setItem('adminToken', data.token);
             window.location.href = 'admin.html';
         } else {
             errorMessage.textContent = data.error || 'Invalid credentials';
