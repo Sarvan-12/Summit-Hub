@@ -174,3 +174,13 @@ body {
     font-size: 0.9rem;
     text-align: center;
 }
+/* Material Icons Alignment Helper */
+.material-icons {
+    font-size: 1.15em;
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4px;
+    line-height: 1;
+}

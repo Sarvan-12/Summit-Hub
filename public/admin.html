@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Conference Speaker Portal</title>
     <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <header class="admin-header">
         <div class="container">
-            <h1 class="admin-logo">⚙ Summit Hub Admin Panel</h1>
+            <h1 class="admin-logo"><span class="material-icons">settings</span> Summit Hub Admin Panel</h1>
             <p class="admin-subtitle">Manage Speakers, Schedules & Conference Settings</p>
         </div>
     </header>
 
     <nav class="admin-nav">
         <div class="container">
-            <button class="nav-btn active" data-section="speakers">👥 Speakers</button>
-            <button class="nav-btn" data-section="schedule">📅 Schedule</button>
-            <button class="nav-btn" data-section="halls">🏢 Halls</button>
-            <button class="nav-btn" data-section="files">📂 Uploaded Files</button>
-            <button class="nav-btn" data-section="settings">⚙ Settings</button>
+            <button class="nav-btn active" data-section="speakers"><span class="material-icons">people</span> Speakers</button>
+            <button class="nav-btn" data-section="schedule"><span class="material-icons">calendar_today</span> Schedule</button>
+            <button class="nav-btn" data-section="halls"><span class="material-icons">apartment</span> Halls</button>
+            <button class="nav-btn" data-section="files"><span class="material-icons">folder</span> Uploaded Files</button>
+            <button class="nav-btn" data-section="settings"><span class="material-icons">settings</span> Settings</button>
         </div>
     </nav>
 
@@ -30,8 +31,8 @@
             <!-- Speakers Management Section -->
             <section id="speakers-section" class="admin-section active">
                 <div class="section-header">
-                    <h2>👥 Speaker Management</h2>
-                    <button class="btn btn-primary" onclick="adminApp.showAddSpeakerForm()">➕ Add New Speaker</button>
+                    <h2><span class="material-icons">people</span> Speaker Management</h2>
+                    <button class="btn btn-primary" onclick="adminApp.showAddSpeakerForm()"><span class="material-icons">add</span> Add New Speaker</button>
                 </div>
                 <div class="speakers-grid" id="speakers-grid">
                     <!-- Dynamic speaker cards will be inserted here -->
@@ -41,8 +42,8 @@
             <!-- Schedule Management Section -->
             <section id="schedule-section" class="admin-section">
                 <div class="section-header">
-                    <h2>📅 Schedule Management</h2>
-                    <button class="btn btn-primary" onclick="adminApp.showAddScheduleForm()">➕ Add New Session</button>
+                    <h2><span class="material-icons">calendar_today</span> Schedule Management</h2>
+                    <button class="btn btn-primary" onclick="adminApp.showAddScheduleForm()"><span class="material-icons">add</span> Add New Session</button>
                 </div>
                 <div class="schedule-grid" id="schedule-grid">
                     <!-- Dynamic schedule cards will be inserted here -->
@@ -52,8 +53,8 @@
             <!-- Halls Management Section -->
             <section id="halls-section" class="admin-section">
                 <div class="section-header">
-                    <h2>🏢 Hall Management</h2>
-                    <button class="btn btn-primary" onclick="adminApp.showAddHallForm()">➕ Add New Hall</button>
+                    <h2><span class="material-icons">apartment</span> Hall Management</h2>
+                    <button class="btn btn-primary" onclick="adminApp.showAddHallForm()"><span class="material-icons">add</span> Add New Hall</button>
                 </div>
                 <div class="halls-grid" id="halls-grid">
                     <!-- Dynamic hall cards will be inserted here -->
@@ -62,7 +63,7 @@
 
             <section id="files-section" class="admin-section">
     <div class="section-header">
-        <h2>📂 Uploaded Files</h2>
+        <h2><span class="material-icons">folder</span> Uploaded Files</h2>
     </div>
     <div class="files-grid" id="files-grid">
         <!-- Files table will be loaded here by JS -->
@@ -72,20 +73,20 @@
             <!-- Settings Section -->
             <section id="settings-section" class="admin-section">
                 <div class="section-header">
-                    <h2>⚙ Conference Settings</h2>
+                    <h2><span class="material-icons">settings</span> Conference Settings</h2>
                 </div>
                 <div class="settings-grid">
                     <div class="setting-card">
-                        <h3>📊 Conference Statistics</h3>
+                        <h3><span class="material-icons">bar_chart</span> Conference Statistics</h3>
                         <div class="stats-display" id="admin-stats">
                             <!-- Stats will be populated here -->
                         </div>
                     </div>
                     <div class="setting-card">
-                        <h3>🔄 Quick Actions</h3>
-                        <button class="btn btn-secondary" onclick="adminApp.exportSchedule()">📥 Export Schedule</button>
-                        <button class="btn btn-secondary" onclick="adminApp.viewPublicSite()">🌐 View Public Site</button>
-                        <button class="btn btn-warning" onclick="adminApp.resetData()">🗑 Reset All Data</button>
+                        <h3><span class="material-icons">sync</span> Quick Actions</h3>
+                        <button class="btn btn-secondary" onclick="adminApp.exportSchedule()"><span class="material-icons">download</span> Export Schedule</button>
+                        <button class="btn btn-secondary" onclick="adminApp.viewPublicSite()"><span class="material-icons">language</span> View Public Site</button>
+                        <button class="btn btn-warning" onclick="adminApp.resetData()"><span class="material-icons">delete</span> Reset All Data</button>
                     </div>
                 </div>
             </section>
@@ -96,7 +97,7 @@
     <div id="add-speaker-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close" onclick="adminApp.closeModal('add-speaker-modal')">&times;</span>
-            <h3>➕ Add New Speaker</h3>
+            <h3><span class="material-icons">add</span> Add New Speaker</h3>
             <form id="add-speaker-form" onsubmit="adminApp.addSpeaker(event)">
                 <div class="form-group">
                     <label for="speaker-name">Full Name *</label>
@@ -120,7 +121,7 @@
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('add-speaker-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">💾 Save Speaker</button>
+                    <button type="submit" class="btn btn-primary"><span class="material-icons">save</span> Save Speaker</button>
                 </div>
             </form>
         </div>
@@ -130,7 +131,7 @@
     <div id="add-schedule-modal" class="modal hidden">
   <div class="modal-content">
     <span class="close" onclick="adminApp.closeModal('add-schedule-modal')">&times;</span>
-    <h3>📅 Add New Session</h3>
+    <h3><span class="material-icons">calendar_today</span> Add New Session</h3>
     <form id="add-schedule-form" onsubmit="adminApp.addSchedule(event)">
       <div class="form-group">
         <label for="schedule-speaker">Speaker *</label>
@@ -150,7 +151,7 @@
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('add-schedule-modal')">Cancel</button>
-        <button type="submit" class="btn btn-primary">📅 Schedule Session</button>
+        <button type="submit" class="btn btn-primary"><span class="material-icons">calendar_today</span> Schedule Session</button>
       </div>
     </form>
   </div>
@@ -160,7 +161,7 @@
     <div id="add-hall-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close" onclick="adminApp.closeModal('add-hall-modal')">&times;</span>
-            <h3>➕ Add New Hall</h3>
+            <h3><span class="material-icons">add</span> Add New Hall</h3>
             <form id="add-hall-form" onsubmit="adminApp.addHall(event)">
                 <div class="form-group">
                     <label for="hall-name">Hall Name *</label>
@@ -176,7 +177,7 @@
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('add-hall-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">💾 Save Hall</button>
+                    <button type="submit" class="btn btn-primary"><span class="material-icons">save</span> Save Hall</button>
                 </div>
             </form>
         </div>

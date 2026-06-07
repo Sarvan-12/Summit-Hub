@@ -625,8 +625,8 @@ async function loadUploadedFiles() {
                                 <td>${(file.file_size / (1024 * 1024)).toFixed(1)} MB</td>
                                 <td>${new Date(file.upload_date).toLocaleString()}</td>
                                 <td>
-                                    <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
-                                    <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})">🗑️ Delete</button>
+                                    <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary"><span class="material-icons">visibility</span> View</a>
+                                    <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})"><span class="material-icons">delete</span> Delete</button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -651,8 +651,8 @@ function renderFilesMobile(files) {
             <div class="file-card-row"><strong>Size:</strong> ${(file.file_size / (1024 * 1024)).toFixed(1)} MB</div>
             <div class="file-card-row"><strong>Uploaded:</strong> ${new Date(file.upload_date).toLocaleString()}</div>
             <div class="file-card-actions">
-                <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
-                <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})">🗑️ Delete</button>
+                <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary"><span class="material-icons">visibility</span> View</a>
+                <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})"><span class="material-icons">delete</span> Delete</button>
             </div>
         </div>
     `).join('');

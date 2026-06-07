@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <div class="dashboard-container">
@@ -15,7 +16,7 @@
         <header class="dashboard-header">
             <div class="header-content">
                 <div class="logo-section">
-                    <h1>🎤 Speaker Dashboard</h1>
+                    <h1><span class="material-icons">mic</span> Speaker Dashboard</h1>
                     <p class="conference-name">Summit Hub 2025</p>
                 </div>
                 <div class="user-info">
@@ -53,8 +54,8 @@
             <!-- Schedule Section -->
             <div class="content-section">
                 <div class="section-header">
-                    <h2>📅 Your Schedule & File Management</h2>
-                    <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+                    <h2><span class="material-icons">calendar_today</span> Your Schedule & File Management</h2>
+                    <button class="refresh-btn" onclick="refreshData()"><span class="material-icons">sync</span> Refresh</button>
                 </div>
                 
                 <div class="schedule-container" id="scheduleContainer">
@@ -65,7 +66,7 @@
             <!-- Profile Section -->
             <div class="content-section">
                 <div class="section-header">
-                    <h2>👤 Speaker Profile</h2>
+                    <h2><span class="material-icons">person</span> Speaker Profile</h2>
                 </div>
                 
                 <div class="profile-card">
@@ -87,7 +88,7 @@
         <div class="modal" id="uploadModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>📎 Upload Presentation</h3>
+                    <h3><span class="material-icons">attachment</span> Upload Presentation</h3>
                     <button class="close-btn" onclick="dashboard.closeUploadModal()">&times;</button>
                 </div>
                 <div class="modal-body">
