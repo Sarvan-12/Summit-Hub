@@ -520,26 +520,63 @@ body {
 
 /* =================== MOBILE RESPONSIVENESS =================== */
 @media (max-width: 768px) {
+    .admin-header {
+        padding: 16px;
+    }
+    .admin-logo {
+        font-size: 1.6rem;
+    }
+    .admin-subtitle {
+        font-size: 0.85rem;
+    }
     .section-header {
         flex-direction: column;
         gap: 12px;
         align-items: flex-start;
     }
-    
-    .admin-nav .container {
-        flex-direction: column;
-        gap: 0;
-        border-bottom: none;
-    }
-    
-    .nav-btn {
+    .section-header .btn {
         width: 100%;
-        border-bottom: 2px solid var(--ink-dark);
-        border-radius: 0;
-        text-align: center;
+        justify-content: center;
     }
-    
+    .admin-nav .container {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 6px;
+        border-bottom: 2px solid var(--ink-dark);
+        padding: 0 4px 2px 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .nav-btn {
+        flex: 0 0 auto;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+    }
+    .admin-main .container {
+        padding: 18px 16px;
+    }
     .setting-card {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 18px 14px;
+        width: 95%;
+        box-shadow: 4px 4px 0px var(--ink-dark);
+    }
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 8px;
+    }
+    .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .speaker-actions .btn,
+    .schedule-actions .btn,
+    .hall-actions .btn {
         flex: 1 1 100%;
     }
 }

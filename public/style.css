@@ -675,20 +675,47 @@ body {
 
 /* =================== RESPONSIVE LAYOUTS =================== */
 @media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .project-details {
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+    .login-options {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .login-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+    .hall-nav {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
     .time-slot {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 14px;
+        padding: 16px;
     }
     .time-info {
         flex-direction: row;
         gap: 12px;
-        padding: 8px;
+        padding: 8px 12px;
+        width: 100%;
     }
     .slot-name {
         margin-top: 0;
     }
     .project-title {
         font-size: 1.8rem;
+    }
+    .paper-sheet {
+        padding: 24px 16px;
     }
 }
 
