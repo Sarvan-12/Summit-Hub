@@ -539,18 +539,22 @@ body {
         justify-content: center;
     }
     .admin-nav .container {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 6px;
-        border-bottom: 2px solid var(--ink-dark);
-        padding: 0 4px 2px 4px;
-        -webkit-overflow-scrolling: touch;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        border-bottom: none;
+        padding: 0;
     }
     .nav-btn {
-        flex: 0 0 auto;
-        padding: 8px 14px;
-        font-size: 0.9rem;
+        width: 100%;
+        border: 2px solid var(--ink-dark);
+        border-radius: 4px;
+        text-align: center;
+        padding: 10px 14px;
+        font-size: 0.95rem;
+    }
+    .nav-btn:nth-child(5) {
+        grid-column: span 2;
     }
     .admin-main .container {
         padding: 18px 16px;
