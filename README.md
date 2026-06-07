@@ -113,10 +113,4 @@ npm start
 
 ## Author
 
-Sarvan D Suvarna
-
----
-
-## License
-
-This project is open-source and available for learning and development purposes.
+* **Sarvan D Suvarna**
