@@ -6,9 +6,48 @@ const path = require('path');
 const fs = require('fs-extra');
 require('dotenv').config();
 const { Parser } = require('json2csv');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+
+// Authentication Middlewares
+function authenticateAdmin(req, res, next) {
+    try {
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+        if (!token) return res.status(401).json({ error: 'Access token required' });
+
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.role !== 'admin') {
+            return res.status(403).json({ error: 'Access forbidden: Admins only' });
+        }
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.status(403).json({ error: 'Invalid or expired token' });
+    }
+}
+
+function authenticateSpeaker(req, res, next) {
+    try {
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+        if (!token) return res.status(401).json({ error: 'Access token required' });
+
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.role !== 'speaker' && decoded.role !== 'admin') {
+            return res.status(403).json({ error: 'Access forbidden: Speakers/Admins only' });
+        }
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.status(403).json({ error: 'Invalid or expired token' });
+    }
+}
 
 // Middleware
 app.use(cors());
@@ -149,7 +188,7 @@ app.get('/api/speakers', async (req, res) => {
 });
 
 // Add new speaker (auto-generate speaker_code)
-app.post('/api/speakers', async (req, res) => {
+app.post('/api/speakers', authenticateAdmin, async (req, res) => {
     try {
         const { full_name, email, phone, title, bio } = req.body;
         
@@ -201,7 +240,7 @@ app.get('/api/schedule', async (req, res) => {
 });
 
 // Add new schedule
-app.post('/api/schedule', async (req, res) => {
+app.post('/api/schedule', authenticateAdmin, async (req, res) => {
     try {
         const { conference_id, speaker_id, hall_id, slot_id, session_title } = req.body;
         await db.execute(
@@ -220,7 +259,7 @@ app.post('/api/schedule', async (req, res) => {
 });
 
 // Update schedule
-app.put('/api/schedule/:id', async (req, res) => {
+app.put('/api/schedule/:id', authenticateAdmin, async (req, res) => {
     try {
         const { conference_id, speaker_id, hall_id, slot_id, session_title, session_description, status } = req.body;
         const [result] = await db.execute(
@@ -236,7 +275,7 @@ app.put('/api/schedule/:id', async (req, res) => {
 });
 
 // Delete schedule
-app.delete('/api/schedule/:id', async (req, res) => {
+app.delete('/api/schedule/:id', authenticateAdmin, async (req, res) => {
     try {
         const [result] = await db.execute('DELETE FROM schedules WHERE schedule_id = ?', [req.params.id]);
         if (result.affectedRows === 0) return res.status(404).json({ error: 'Schedule not found' });
@@ -280,9 +319,12 @@ app.get('/api/schedule/hall/:hallId', async (req, res) => {
 });
 
 // Get Speaker Profile + Schedule by Code
-app.get('/api/speaker/profile/:code', async (req, res) => {
+app.get('/api/speaker/profile/:code', authenticateSpeaker, async (req, res) => {
     try {
         const { code } = req.params;
+        if (req.user.role !== 'admin' && req.user.speakerCode !== code) {
+            return res.status(403).json({ error: 'Access forbidden: You can only view your own profile' });
+        }
         const [speakers] = await db.execute(
             'SELECT * FROM speakers WHERE speaker_code = ?',
             [code]
@@ -327,9 +369,12 @@ app.get('/api/speaker/profile/:code', async (req, res) => {
 });
 
 // Get Uploaded Files for Speaker
-app.get('/api/speaker/files/:code', async (req, res) => {
+app.get('/api/speaker/files/:code', authenticateSpeaker, async (req, res) => {
     try {
         const { code } = req.params;
+        if (req.user.role !== 'admin' && req.user.speakerCode !== code) {
+            return res.status(403).json({ error: 'Access forbidden: You can only view your own files' });
+        }
         const [speakers] = await db.execute(
             'SELECT speaker_id FROM speakers WHERE speaker_code = ?',
             [code]
@@ -343,7 +388,7 @@ app.get('/api/speaker/files/:code', async (req, res) => {
                 uf.file_id,
                 uf.original_name,
                 uf.stored_filename,
-                uf.stored_path,           -- Make sure this column exists in your DB!
+                uf.stored_path,           
                 uf.file_size,
                 uf.upload_status,
                 uf.upload_date,
@@ -413,7 +458,16 @@ app.post('/api/speaker/login', async (req, res) => {
             WHERE sch.speaker_id = ?
             ORDER BY ts.day_number, ts.start_time
         `, [speaker.speaker_id]);
+
+        // Generate JWT token
+        const token = jwt.sign(
+            { role: 'speaker', speakerCode: speaker.speaker_code, speakerId: speaker.speaker_id },
+            JWT_SECRET,
+            { expiresIn: '12h' }
+        );
+
         res.json({
+            token,
             speaker: {
                 speaker_id: speaker.speaker_id,
                 speaker_code: speaker.speaker_code,
@@ -467,12 +521,19 @@ const upload = multer({
     }
 });
 
-app.post('/api/upload/presentation', (req, res, next) => {
+app.post('/api/upload/presentation', authenticateSpeaker, (req, res, next) => {
     upload.single('presentation')(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             return res.status(400).json({ error: `Upload error: ${err.message}` });
         } else if (err) {
             return res.status(400).json({ error: err.message });
+        }
+        // Verify speaker permissions after body parsing
+        if (req.user.role !== 'admin' && req.user.speakerCode !== req.body.speakerCode) {
+            if (req.file) {
+                fs.removeSync(req.file.path);
+            }
+            return res.status(403).json({ error: 'Access forbidden: You can only upload files for your own account' });
         }
         next();
     });
@@ -554,15 +615,18 @@ app.post('/api/upload/presentation', (req, res, next) => {
 });
 
 // Delete uploaded file by file_id
-app.delete('/api/files/:fileId', async (req, res) => {
+app.delete('/api/files/:fileId', authenticateSpeaker, async (req, res) => {
     try {
         const { fileId } = req.params;
         const [files] = await db.execute(
-            'SELECT stored_path, stored_filename FROM uploaded_files WHERE file_id = ?',
+            'SELECT stored_path, stored_filename, speaker_code FROM uploaded_files WHERE file_id = ?',
             [fileId]
         );
         if (files.length === 0) {
             return res.status(404).json({ error: 'File not found' });
+        }
+        if (req.user.role !== 'admin' && req.user.speakerCode !== files[0].speaker_code) {
+            return res.status(403).json({ error: 'Access forbidden: You can only delete your own files' });
         }
         const filePath = path.join(__dirname, files[0].stored_path, files[0].stored_filename);
         try {
@@ -639,7 +703,7 @@ app.get('/api/speakers/:id', async (req, res) => {
 });
 
 // Delete speaker
-app.delete('/api/speakers/:id', async (req, res) => {
+app.delete('/api/speakers/:id', authenticateAdmin, async (req, res) => {
     try {
         const [result] = await db.execute('DELETE FROM speakers WHERE speaker_id = ?', [req.params.id]);
         if (result.affectedRows === 0) {
@@ -652,7 +716,7 @@ app.delete('/api/speakers/:id', async (req, res) => {
 });
 
 // Update speaker
-app.put('/api/speakers/:id', async (req, res) => {
+app.put('/api/speakers/:id', authenticateAdmin, async (req, res) => {
     try {
         const { full_name, email, phone, title, bio } = req.body;
         
@@ -696,7 +760,7 @@ app.get('/api/halls/:id', async (req, res) => {
 });
 
 // Add new hall
-app.post('/api/halls', async (req, res) => {
+app.post('/api/halls', authenticateAdmin, async (req, res) => {
     try {
         const { hall_name, capacity, location } = req.body;
         const conferenceId = req.body.conference_id || process.env.DEFAULT_CONFERENCE_ID || 1;
@@ -712,7 +776,7 @@ app.post('/api/halls', async (req, res) => {
 });
 
 // Update hall
-app.put('/api/halls/:id', async (req, res) => {
+app.put('/api/halls/:id', authenticateAdmin, async (req, res) => {
     try {
         const { hall_name, capacity, location } = req.body;
         const [result] = await db.execute(
@@ -729,7 +793,7 @@ app.put('/api/halls/:id', async (req, res) => {
 });
 
 // Delete hall
-app.delete('/api/halls/:id', async (req, res) => {
+app.delete('/api/halls/:id', authenticateAdmin, async (req, res) => {
     try {
         const [result] = await db.execute('DELETE FROM halls WHERE hall_id = ?', [req.params.id]);
         if (result.affectedRows === 0) {
@@ -742,7 +806,7 @@ app.delete('/api/halls/:id', async (req, res) => {
 });
 
 
-app.get('/api/export/schedule', async (req, res) => {
+app.get('/api/export/schedule', authenticateAdmin, async (req, res) => {
     try {
         const [rows] = await db.execute(`
             SELECT s.schedule_id, s.session_title, sp.full_name AS speaker, h.hall_name, ts.day_number, ts.slot_name, ts.start_time, ts.end_time
@@ -762,13 +826,24 @@ app.get('/api/export/schedule', async (req, res) => {
     }
 });
 
-app.post('/api/reset', async (req, res) => {
+app.post('/api/reset', authenticateAdmin, async (req, res) => {
     try {
         // Order matters due to foreign key constraints
         await db.execute('DELETE FROM uploaded_files');
         await db.execute('DELETE FROM schedules');
         await db.execute('DELETE FROM speakers');
         await db.execute('DELETE FROM halls');
+        
+        // Empty physical uploads directory
+        try {
+            const uploadsDir = path.join(__dirname, 'uploads');
+            if (fs.existsSync(uploadsDir)) {
+                fs.emptyDirSync(uploadsDir);
+            }
+        } catch (dirErr) {
+            console.warn('Could not empty uploads directory:', dirErr);
+        }
+        
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Failed to reset data' });
@@ -781,14 +856,19 @@ app.post('/api/admin/login', async (req, res) => {
     const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
     
     if (username === adminUser && password === adminPassword) {
-        res.json({ success: true });
+        const token = jwt.sign(
+            { role: 'admin', username: username },
+            JWT_SECRET,
+            { expiresIn: '12h' }
+        );
+        res.json({ success: true, token });
     } else {
         res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
 });
 
 
-app.get('/api/admin/files', async (req, res) => {
+app.get('/api/admin/files', authenticateAdmin, async (req, res) => {
     try {
         const [files] = await db.execute(`
             SELECT 

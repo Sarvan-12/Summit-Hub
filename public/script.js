@@ -24,7 +24,7 @@ class ConferenceSchedule {
             document.getElementById('schedule-container').classList.add('hidden');
             document.getElementById('error').classList.add('hidden');
 
-            console.log('📊 Loading conference data...');
+            console.log('<span class="material-icons">bar_chart</span> Loading conference data...');
 
             // Fetch all required data
             const [hallsResponse, scheduleResponse, speakersResponse, timeSlotsResponse] = await Promise.all([
@@ -66,7 +66,7 @@ class ConferenceSchedule {
             document.getElementById('schedule-container').classList.remove('hidden');
 
         } catch (error) {
-            console.error('❌ Error loading data:', error);
+            console.error('<span class="material-icons">error</span> Error loading data:', error);
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('error').classList.remove('hidden');
         }
@@ -81,7 +81,7 @@ class ConferenceSchedule {
             button.className = `hall-btn ${index === 0 ? 'active' : ''}`;
             button.dataset.hallId = hall.hall_id;
             button.innerHTML = `
-                📍 ${hall.hall_name}
+                <span class="material-icons">location_on</span> ${hall.hall_name}
                 <span class="capacity">(${hall.capacity} seats)</span>
             `;
             
@@ -174,7 +174,7 @@ class ConferenceSchedule {
         if (filteredSchedule.length === 0) {
             scheduleGrid.innerHTML = `
                 <div class="empty-state">
-                    <h3>📅 No Sessions Scheduled</h3>
+                    <h3><span class="material-icons">calendar_today</span> No Sessions Scheduled</h3>
                     <p>No sessions are currently scheduled for ${this.getCurrentHallName()} on Day ${this.currentDay}</p>
                     <p style="margin-top: 10px; font-size: 0.9rem; color: #718096;">
                         Check other days or halls for available sessions.
@@ -188,7 +188,9 @@ class ConferenceSchedule {
         filteredSchedule.sort((a, b) => a.slot_order - b.slot_order);
 
         // Generate HTML
-        scheduleGrid.innerHTML = filteredSchedule.map((session, index) => `
+        scheduleGrid.innerHTML = filteredSchedule.map((session, index) => {
+            const randomRotation = (Math.random() * 6 - 3).toFixed(1); // Random angle between -3 and 3 degrees
+            return `
             <div class="time-slot" style="animation-delay: ${index * 0.1}s">
                 <div class="time-info">
                     <div class="time-range">
@@ -203,14 +205,18 @@ class ConferenceSchedule {
                     <div class="speaker-title">${session.speaker_title}</div>
                     ${session.session_title ? `<div class="session-title">"${session.session_title}"</div>` : ''}
                     <div class="speaker-meta">
-                        <span>👤 ${session.speaker_code}</span>
-                        <span>📍 ${session.hall_name}</span>
-                        <span>📅 Day ${session.day_number}</span>
-                        <span>⏰ ${this.getSessionDuration(session.start_time, session.end_time)}</span>
+                        <span><span class="material-icons">person</span> ${session.speaker_code}</span>
+                        <span><span class="material-icons">location_on</span> ${session.hall_name}</span>
+                        <span><span class="material-icons">calendar_today</span> Day ${session.day_number}</span>
+                        <span><span class="material-icons">schedule</span> ${this.getSessionDuration(session.start_time, session.end_time)}</span>
+                    </div>
+                    <div>
+                        <span class="stamp-badge stamp-${session.status || 'confirmed'}" style="transform: rotate(${randomRotation}deg);">${session.status || 'confirmed'}</span>
                     </div>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     updateStats() {
@@ -285,7 +291,7 @@ class ConferenceSchedule {
             
             if (!speaker) {
                 // Fallback to API call
-                const response = await fetch(`/api/speaker/${speakerId}`);
+                const response = await fetch(`/api/speakers/${speakerId}`);
                 if (!response.ok) throw new Error('Failed to fetch speaker details');
                 speaker = await response.json();
             }
@@ -318,7 +324,7 @@ class ConferenceSchedule {
             document.getElementById('speaker-modal').classList.remove('hidden');
             
         } catch (error) {
-            console.error('❌ Error loading speaker details:', error);
+            console.error('<span class="material-icons">error</span> Error loading speaker details:', error);
             alert('Failed to load speaker details. Please try again.');
         }
     }
@@ -347,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Auto-refresh data every 5 minutes
 setInterval(() => {
     if (window.app) {
-        console.log('🔄 Auto-refreshing data...');
+        console.log('<span class="material-icons">sync</span> Auto-refreshing data...');
         window.app.loadData();
     }
 }, 5 * 60 * 1000);

@@ -1,3 +1,23 @@
+// Protect page
+if (localStorage.getItem('adminAuth') !== 'true') {
+    window.location.href = 'admin-login.html';
+}
+
+async function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('adminToken');
+    options.headers = options.headers || {};
+    if (token) {
+        options.headers['Authorization'] = `Bearer ${token}`;
+    }
+    const res = await fetch(url, options);
+    if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminToken');
+        window.location.href = 'admin-login.html';
+    }
+    return res;
+}
+
 const adminApp = {
     currentSection: 'speakers',
 
@@ -38,7 +58,7 @@ const adminApp = {
         const grid = document.getElementById('speakers-grid');
         grid.innerHTML = '<div>Loading...</div>';
         try {
-            const res = await fetch('/api/speakers');
+            const res = await fetchWithAuth('/api/speakers');
             const speakers = await res.json();
             grid.innerHTML = speakers.map(speaker => `
     <div class="speaker-card" style="cursor:pointer;">
@@ -66,11 +86,11 @@ const adminApp = {
         modal.classList.remove('hidden');
         try {
             // Fetch speaker details
-            const res = await fetch(`/api/speakers/${speakerId}`);
+            const res = await fetchWithAuth(`/api/speakers/${speakerId}`);
             const speaker = await res.json();
 
             // Fetch speaker's schedule
-            const scheduleRes = await fetch(`/api/schedule?speaker_id=${speakerId}`);
+            const scheduleRes = await fetchWithAuth(`/api/schedule?speaker_id=${speakerId}`);
             const schedule = await scheduleRes.json();
 
             content.innerHTML = `
@@ -108,7 +128,7 @@ const adminApp = {
         const form = e.target;
         const data = Object.fromEntries(new FormData(form));
         try {
-            const res = await fetch('/api/speakers', {
+            const res = await fetchWithAuth('/api/speakers', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -124,7 +144,7 @@ const adminApp = {
 
     editSpeaker: async function(speakerId) {
         try {
-            const res = await fetch(`/api/speakers/${speakerId}`);
+            const res = await fetchWithAuth(`/api/speakers/${speakerId}`);
             if (!res.ok) throw new Error();
             const speaker = await res.json();
             document.getElementById('edit-speaker-id').value = speaker.speaker_id;
@@ -145,7 +165,7 @@ const adminApp = {
         const data = Object.fromEntries(new FormData(form));
         const speakerId = data.speaker_id;
         try {
-            const res = await fetch(`/api/speakers/${speakerId}`, {
+            const res = await fetchWithAuth(`/api/speakers/${speakerId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -162,7 +182,7 @@ const adminApp = {
     deleteSpeaker: async function(speakerId) {
         if (!confirm('Are you sure you want to delete this speaker?')) return;
         try {
-            const res = await fetch(`/api/speakers/${speakerId}`, { method: 'DELETE' });
+            const res = await fetchWithAuth(`/api/speakers/${speakerId}`, { method: 'DELETE' });
             if (!res.ok) throw new Error();
             this.loadSpeakers();
             this.showToast('Speaker deleted!', 'success');
@@ -176,7 +196,7 @@ const adminApp = {
         const grid = document.getElementById('schedule-grid');
         grid.innerHTML = '<div>Loading...</div>';
         try {
-            const res = await fetch('/api/schedule');
+            const res = await fetchWithAuth('/api/schedule');
             const schedule = await res.json();
             grid.innerHTML = schedule.map(session => `
                 <div class="schedule-card">
@@ -203,10 +223,10 @@ const adminApp = {
 async populateScheduleForm() {
     // Fetch all data
     const [speakersRes, hallsRes, slotsRes, schedulesRes] = await Promise.all([
-        fetch('/api/speakers'),
-        fetch('/api/halls'),
-        fetch('/api/timeslots'),
-        fetch('/api/schedule')
+        fetchWithAuth('/api/speakers'),
+        fetchWithAuth('/api/halls'),
+        fetchWithAuth('/api/timeslots'),
+        fetchWithAuth('/api/schedule')
     ]);
     const speakers = await speakersRes.json();
     const halls = await hallsRes.json();
@@ -260,10 +280,10 @@ speakers.forEach(s => {
 editSchedule: async function(scheduleId) {
     try {
         const [speakersRes, hallsRes, slotsRes, schedulesRes] = await Promise.all([
-            fetch('/api/speakers'),
-            fetch('/api/halls'),
-            fetch('/api/timeslots'),
-            fetch('/api/schedule')
+            fetchWithAuth('/api/speakers'),
+            fetchWithAuth('/api/halls'),
+            fetchWithAuth('/api/timeslots'),
+            fetchWithAuth('/api/schedule')
         ]);
         const speakers = await speakersRes.json();
         const halls = await hallsRes.json();
@@ -324,7 +344,7 @@ addSchedule: async function(e) {
     // You may want to set conference_id here if needed
     data.conference_id = 1; // or your actual conference_id logic
     try {
-        const res = await fetch('/api/schedule', {
+        const res = await fetchWithAuth('/api/schedule', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -373,7 +393,7 @@ updateSchedule: async function(e) {
     const data = Object.fromEntries(new FormData(form));
     const scheduleId = data.schedule_id;
     try {
-        const res = await fetch(`/api/schedule/${scheduleId}`, {
+        const res = await fetchWithAuth(`/api/schedule/${scheduleId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -392,7 +412,7 @@ updateSchedule: async function(e) {
     async deleteSchedule(scheduleId) {
     if (!confirm('Delete this session?')) return;
     try {
-        const res = await fetch(`/api/schedule/${scheduleId}`, { method: 'DELETE' });
+        const res = await fetchWithAuth(`/api/schedule/${scheduleId}`, { method: 'DELETE' });
         if (!res.ok) throw new Error();
         this.loadSchedule();
         this.showToast('Session deleted!', 'success');
@@ -406,7 +426,7 @@ updateSchedule: async function(e) {
         const grid = document.getElementById('halls-grid');
         grid.innerHTML = '<div>Loading...</div>';
         try {
-            const res = await fetch('/api/halls');
+            const res = await fetchWithAuth('/api/halls');
             const halls = await res.json();
             grid.innerHTML = halls.map(hall => `
                 <div class="hall-card">
@@ -432,7 +452,7 @@ updateSchedule: async function(e) {
         const form = e.target;
         const data = Object.fromEntries(new FormData(form));
         try {
-            const res = await fetch('/api/halls', {
+            const res = await fetchWithAuth('/api/halls', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -450,7 +470,7 @@ updateSchedule: async function(e) {
 editHall: async function(hallId) {
     console.log('Editing hall:', hallId);
     try {
-        const res = await fetch(`/api/halls/${hallId}`);
+        const res = await fetchWithAuth(`/api/halls/${hallId}`);
         if (!res.ok) throw new Error();
         const hall = await res.json();
         document.getElementById('edit-hall-id').value = hall.hall_id;
@@ -469,7 +489,7 @@ updateHall: async function(e) {
     const data = Object.fromEntries(new FormData(form));
     const hallId = data.hall_id;
     try {
-        const res = await fetch(`/api/halls/${hallId}`, {
+        const res = await fetchWithAuth(`/api/halls/${hallId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -486,7 +506,7 @@ updateHall: async function(e) {
 async deleteHall(hallId) {
     if (!confirm('Delete this hall?')) return;
     try {
-        const res = await fetch(`/api/halls/${hallId}`, { method: 'DELETE' });
+        const res = await fetchWithAuth(`/api/halls/${hallId}`, { method: 'DELETE' });
         if (!res.ok) throw new Error();
         this.loadHalls();
         this.showToast('Hall deleted!', 'success');
@@ -500,9 +520,9 @@ async deleteHall(hallId) {
         const statsDiv = document.getElementById('admin-stats');
         try {
             const [speakersRes, scheduleRes, hallsRes] = await Promise.all([
-                fetch('/api/speakers'),
-                fetch('/api/schedule'),
-                fetch('/api/halls')
+                fetchWithAuth('/api/speakers'),
+                fetchWithAuth('/api/schedule'),
+                fetchWithAuth('/api/halls')
             ]);
             const speakers = await speakersRes.json();
             const schedule = await scheduleRes.json();
@@ -518,7 +538,7 @@ async deleteHall(hallId) {
     },
 
     exportSchedule() {
-        fetch('/api/export/schedule')
+        fetchWithAuth('/api/export/schedule')
         .then(res => {
             if (!res.ok) throw new Error();
             return res.blob();
@@ -543,7 +563,7 @@ async deleteHall(hallId) {
 
     resetData() {
         if (!confirm('Are you sure you want to reset ALL data? This cannot be undone!')) return;
-    fetch('/api/reset', { method: 'POST' })
+    fetchWithAuth('/api/reset', { method: 'POST' })
         .then(res => {
             if (!res.ok) throw new Error();
             this.loadSpeakers();
@@ -570,7 +590,7 @@ async function loadUploadedFiles() {
     const filesGrid = document.getElementById('files-grid');
     filesGrid.innerHTML = '<p>Loading files...</p>';
     try {
-        const res = await fetch('/api/admin/files');
+        const res = await fetchWithAuth('/api/admin/files');
         const files = await res.json();
         if (!files.length) {
             filesGrid.innerHTML = '<p>No files uploaded yet.</p>';
@@ -605,8 +625,8 @@ async function loadUploadedFiles() {
                                 <td>${(file.file_size / (1024 * 1024)).toFixed(1)} MB</td>
                                 <td>${new Date(file.upload_date).toLocaleString()}</td>
                                 <td>
-                                    <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
-                                    <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})">🗑️ Delete</button>
+                                    <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary"><span class="material-icons">visibility</span> View</a>
+                                    <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})"><span class="material-icons">delete</span> Delete</button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -631,8 +651,8 @@ function renderFilesMobile(files) {
             <div class="file-card-row"><strong>Size:</strong> ${(file.file_size / (1024 * 1024)).toFixed(1)} MB</div>
             <div class="file-card-row"><strong>Uploaded:</strong> ${new Date(file.upload_date).toLocaleString()}</div>
             <div class="file-card-actions">
-                <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
-                <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})">🗑️ Delete</button>
+                <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary"><span class="material-icons">visibility</span> View</a>
+                <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})"><span class="material-icons">delete</span> Delete</button>
             </div>
         </div>
     `).join('');
@@ -642,7 +662,7 @@ function renderFilesMobile(files) {
 async function deleteAdminFile(fileId) {
     if (!confirm('Are you sure you want to delete this file?')) return;
     try {
-        const res = await fetch(`/api/files/${fileId}`, { method: 'DELETE' });
+        const res = await fetchWithAuth(`/api/files/${fileId}`, { method: 'DELETE' });
         if (res.ok) {
             alert('File deleted successfully!');
             loadUploadedFiles();

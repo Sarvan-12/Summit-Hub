@@ -1,3 +1,19 @@
+async function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('speakerToken');
+    options.headers = options.headers || {};
+    if (token) {
+        options.headers['Authorization'] = `Bearer ${token}`;
+    }
+    const res = await fetch(url, options);
+    if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem('speakerData');
+        localStorage.removeItem('speakerToken');
+        localStorage.removeItem('speakerCode');
+        window.location.href = '/speaker-login.html';
+    }
+    return res;
+}
+
 class SpeakerDashboard {
     constructor() {
         this.speakerData = null;
@@ -36,8 +52,8 @@ class SpeakerDashboard {
 
             // Load speaker profile and files
             const [profileResponse, filesResponse] = await Promise.all([
-                fetch(`/api/speaker/profile/${speakerCode}`),
-                fetch(`/api/speaker/files/${speakerCode}`)
+                fetchWithAuth(`/api/speaker/profile/${speakerCode}`),
+                fetchWithAuth(`/api/speaker/files/${speakerCode}`)
 
             ]);
 
@@ -113,15 +129,15 @@ class SpeakerDashboard {
                             <h3>${session.session_title}</h3>
                             <div class="session-details">
                                 <div class="detail-item">
-                                    <span>🏢</span>
+                                    <span><span class="material-icons">apartment</span></span>
                                     <span>${session.hall_name} (${session.capacity} seats)</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span>📅</span>
+                                    <span><span class="material-icons">calendar_today</span></span>
                                     <span>Day ${session.day_number}</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span>⏰</span>
+                                    <span><span class="material-icons">schedule</span></span>
                                     <span>${this.formatTime(session.start_time)} - ${this.formatTime(session.end_time)}</span>
                                 </div>
                             </div>
@@ -144,13 +160,13 @@ class SpeakerDashboard {
         </div>
     </div>
     <div class="file-actions">
-        <a href="/${uploadedFile.stored_path.replace(/\\/g, '/')}/${uploadedFile.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
-        <button class="btn btn-danger" onclick="dashboard.deleteFile(${uploadedFile.file_id})">🗑️ Delete</button>
+        <a href="/${uploadedFile.stored_path.replace(/\\/g, '/')}/${uploadedFile.stored_filename}" target="_blank" class="btn btn-secondary"><span class="material-icons">visibility</span> View</a>
+        <button class="btn btn-danger" onclick="dashboard.deleteFile(${uploadedFile.file_id})"><span class="material-icons">delete</span> Delete</button>
     </div>
 ` : `
     <div class="file-actions">
         <button class="btn btn-primary" onclick="dashboard.uploadFile('${session.schedule_id}', '${session.hall_name}', ${session.day_number}, '${session.session_title}')">
-            📎 Upload Presentation
+            <span class="material-icons">attachment</span> Upload Presentation
         </button>
     </div>
 `}
@@ -299,6 +315,10 @@ class SpeakerDashboard {
             });
 
             xhr.open('POST', '/api/upload/presentation');
+            const token = localStorage.getItem('speakerToken');
+            if (token) {
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            }
             xhr.send(formData);
 
         } catch (error) {
@@ -341,7 +361,7 @@ class SpeakerDashboard {
         if (!confirm('Are you sure you want to delete this file?')) return;
 
         try {
-            const response = await fetch(`/api/files/${fileId}`, {
+            const response = await fetchWithAuth(`/api/files/${fileId}`, {
                 method: 'DELETE'
             });
 
@@ -422,6 +442,8 @@ class SpeakerDashboard {
 // Global functions
 function logout() {
     localStorage.removeItem('speakerData');
+    localStorage.removeItem('speakerToken');
+    localStorage.removeItem('speakerCode');
     window.location.href = '/speaker-login.html';
 }
 
