@@ -1,3 +1,19 @@
+async function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('speakerToken');
+    options.headers = options.headers || {};
+    if (token) {
+        options.headers['Authorization'] = `Bearer ${token}`;
+    }
+    const res = await fetch(url, options);
+    if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem('speakerData');
+        localStorage.removeItem('speakerToken');
+        localStorage.removeItem('speakerCode');
+        window.location.href = '/speaker-login.html';
+    }
+    return res;
+}
+
 class SpeakerDashboard {
     constructor() {
         this.speakerData = null;
@@ -36,8 +52,8 @@ class SpeakerDashboard {
 
             // Load speaker profile and files
             const [profileResponse, filesResponse] = await Promise.all([
-                fetch(`/api/speaker/profile/${speakerCode}`),
-                fetch(`/api/speaker/files/${speakerCode}`)
+                fetchWithAuth(`/api/speaker/profile/${speakerCode}`),
+                fetchWithAuth(`/api/speaker/files/${speakerCode}`)
 
             ]);
 
@@ -299,6 +315,10 @@ class SpeakerDashboard {
             });
 
             xhr.open('POST', '/api/upload/presentation');
+            const token = localStorage.getItem('speakerToken');
+            if (token) {
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            }
             xhr.send(formData);
 
         } catch (error) {
@@ -341,7 +361,7 @@ class SpeakerDashboard {
         if (!confirm('Are you sure you want to delete this file?')) return;
 
         try {
-            const response = await fetch(`/api/files/${fileId}`, {
+            const response = await fetchWithAuth(`/api/files/${fileId}`, {
                 method: 'DELETE'
             });
 
@@ -422,6 +442,8 @@ class SpeakerDashboard {
 // Global functions
 function logout() {
     localStorage.removeItem('speakerData');
+    localStorage.removeItem('speakerToken');
+    localStorage.removeItem('speakerCode');
     window.location.href = '/speaker-login.html';
 }
 

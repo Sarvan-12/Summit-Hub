@@ -62,6 +62,7 @@ class SpeakerLogin {
                 // Store speaker info
                 localStorage.setItem('speakerData', JSON.stringify(data));
                 localStorage.setItem('speakerCode', speakerCode);
+                localStorage.setItem('speakerToken', data.token);
                 
                 // Redirect to dashboard
                 window.location.href = 'speaker-dashboard.html';
