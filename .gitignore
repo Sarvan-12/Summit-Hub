@@ -56,6 +56,4 @@ build/
 # Cache
 .npm
 .cache
-
-# Database directory
-/database/
+
