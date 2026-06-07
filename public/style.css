@@ -407,7 +407,8 @@ body {
     border: 2px solid var(--ink-dark);
     border-radius: 4px;
     padding: 28px;
-    margin-top: 36px;
+    margin: 36px auto 0 auto;
+    max-width: 1076px; /* Align with schedule paper sheet width */
     box-shadow: 4px 4px 0px var(--ink-dark);
 }
 
@@ -424,7 +425,7 @@ body {
 
 .speakers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 20px;
 }
 
