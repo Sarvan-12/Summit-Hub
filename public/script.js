@@ -288,7 +288,7 @@ class ConferenceSchedule {
             
             if (!speaker) {
                 // Fallback to API call
-                const response = await fetch(`/api/speaker/${speakerId}`);
+                const response = await fetch(`/api/speakers/${speakerId}`);
                 if (!response.ok) throw new Error('Failed to fetch speaker details');
                 speaker = await response.json();
             }
