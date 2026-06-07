@@ -408,7 +408,8 @@ body {
     border-radius: 4px;
     padding: 28px;
     margin: 36px auto 0 auto;
-    max-width: 1076px; /* Align with schedule paper sheet width */
+    width: 90%;
+    max-width: 1400px;
     box-shadow: 4px 4px 0px var(--ink-dark);
 }
 
