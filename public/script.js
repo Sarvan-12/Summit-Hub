@@ -188,7 +188,9 @@ class ConferenceSchedule {
         filteredSchedule.sort((a, b) => a.slot_order - b.slot_order);
 
         // Generate HTML
-        scheduleGrid.innerHTML = filteredSchedule.map((session, index) => `
+        scheduleGrid.innerHTML = filteredSchedule.map((session, index) => {
+            const randomRotation = (Math.random() * 6 - 3).toFixed(1); // Random angle between -3 and 3 degrees
+            return `
             <div class="time-slot" style="animation-delay: ${index * 0.1}s">
                 <div class="time-info">
                     <div class="time-range">
@@ -209,11 +211,12 @@ class ConferenceSchedule {
                         <span>⏰ ${this.getSessionDuration(session.start_time, session.end_time)}</span>
                     </div>
                     <div>
-                        <span class="stamp-badge stamp-${session.status || 'confirmed'}">${session.status || 'confirmed'}</span>
+                        <span class="stamp-badge stamp-${session.status || 'confirmed'}" style="transform: rotate(${randomRotation}deg);">${session.status || 'confirmed'}</span>
                     </div>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     updateStats() {
