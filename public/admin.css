@@ -77,8 +77,8 @@ body {
 
 .nav-btn {
     font-family: 'Special Elite', monospace;
-    background: none;
-    border: 2px solid transparent;
+    background-color: var(--paper-bg);
+    border: 2px solid var(--ink-dark);
     border-bottom: none;
     padding: 10px 20px;
     font-size: 1rem;
@@ -87,11 +87,13 @@ body {
     border-radius: 4px 4px 0 0;
     transition: all 0.2s;
     white-space: nowrap;
+    opacity: 0.8;
 }
 
 .nav-btn:hover {
     color: var(--ink-dark);
-    background-color: rgba(0,0,0,0.03);
+    background-color: var(--paper-sheet);
+    opacity: 1;
 }
 
 .nav-btn.active {
@@ -99,6 +101,7 @@ body {
     border-color: var(--ink-dark);
     background-color: var(--sky-blue);
     font-weight: bold;
+    opacity: 1;
 }
 
 /* =================== MAIN CONTAINER SHEET =================== */
