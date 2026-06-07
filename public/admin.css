@@ -217,10 +217,10 @@ body {
     background-color: var(--paper-bg);
     border: 2px dashed var(--ink-dark);
     border-radius: 4px;
-    padding: 16px 20px;
+    padding: 18px 22px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
     transition: all 0.2s;
 }
 
@@ -237,7 +237,7 @@ body {
     font-family: 'Playfair Display', serif;
     font-size: 1.25rem;
     font-weight: 800;
-    margin: 0;
+    margin: 0 0 10px 0;
 }
 
 .speaker-meta,
@@ -246,17 +246,19 @@ body {
     font-family: 'Special Elite', monospace;
     font-size: 0.85rem;
     color: var(--ink-muted);
+    line-height: 1.5;
+    margin-bottom: 5px;
 }
 
 .speaker-actions,
 .schedule-actions,
 .hall-actions {
-    margin-top: auto;
+    margin-top: 16px;
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
     border-top: 1px dashed var(--border-color);
-    padding-top: 8px;
+    padding-top: 12px;
 }
 
 .speaker-actions .btn,
@@ -454,9 +456,24 @@ body {
 .stats-display {
     font-family: 'Special Elite', monospace;
     background-color: var(--paper-sheet);
-    border: 1px solid var(--ink-dark);
-    padding: 12px;
-    font-size: 0.95rem;
+    border: 2px solid var(--ink-dark);
+    padding: 20px;
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.stats-display div {
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.stats-display div:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.stats-display div:first-child {
+    padding-top: 0;
 }
 
 .setting-card .btn {
