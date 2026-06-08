@@ -1,52 +1,45 @@
-# Summit Hub
+# Summit Hub 🚀
 
 ## Overview
 
-Summit Hub is a centralized platform designed to bring together users, ideas, and activities in one place. It aims to simplify how individuals interact with events, projects, or collaborative spaces by providing a structured and accessible hub.
-
-The platform focuses on usability, clarity, and scalability, making it suitable for academic, community, or organizational use.
+Summit Hub is a centralized platform designed to bring together event organizers, speakers, and attendees in one place. It simplifies how individuals interact with conference schedules, presentation uploads, and administrative controls by providing a structured, highly secure, and elegant retro-modern interface.
 
 ---
 
 ## Live Demo
 
 Access the deployed application here:
-https://summit-hub-production.up.railway.app/
+🔗 [https://summit-hub.onrender.com/](https://summit-hub.onrender.com/)
 
----
-
-## Problem Statement
-
-Managing multiple activities, events, or collaborative efforts across different platforms can be inefficient and fragmented. Users often struggle with:
-
-* Lack of a single unified interface
-* Difficulty in tracking and organizing information
-* Poor accessibility and user experience
-
----
-
-## Solution
-
-Summit Hub addresses these issues by offering a unified platform where users can interact, explore, and manage content in a structured way. It provides a streamlined interface that improves accessibility and reduces complexity.
+⭐ If you like this project, please star this repository!
 
 ---
 
 ## Features
 
-* Centralized hub for managing and accessing content
-* Clean and intuitive user interface
-* Scalable architecture for future enhancements
-* Organized structure for better usability
-* Deployment-ready and accessible via web
+### 🔒 Security & Privacy
+* **JWT Cookie Authentication:** Admin and Speaker dashboards are secured using HTTP-only cookies and robust JWT parsing middleware.
+* **Bcrypt Password Hashing:** Secure password hashing on registration and password updates.
+* **Privacy Controls:** Public endpoints explicitly filter out sensitive speaker data (such as phone numbers and password hashes).
+
+### 📅 Conference & Schedule Management
+* **Attendee Schedule:** Interactive day-by-day and hall-by-hall grid for attendees to explore tracks.
+* **Admin Dashboard:** Manage halls, schedule slots, and speakers dynamically. Export schedules to CSV files easily.
+* **File Management Hub:** Secure administrative dashboard to inspect, download, or delete uploaded speaker slide decks.
+
+### 🎙️ Speaker Dashboards
+* **Speaker Self-Service:** Unique speaker codes (e.g., `SP001`) with personal passwords.
+* **Upload System:** Secure PDF/PPTX upload validation for presentation slides.
 
 ---
 
 ## Tech Stack
 
-* Frontend: Vanilla HTML5, CSS3 (Modern Flexbox/Grid, custom variables), and ES6 Javascript
-* Backend: Node.js, Express, Multer (secure file uploads), and json2csv (schedule exports)
-* Database: MySQL (relational constraints, connection pooling via `mysql2/promise`)
-* Deployment: Railway / Vercel ready
+* **Frontend:** Vanilla HTML5, CSS3 (Modern custom variables & flex/grid layout), and ES6 Javascript.
+* **Backend:** Node.js, Express, Multer (secure uploads validation), and json2csv (data exports).
+* **Database:** MySQL (relational constraints, connection pooling via `mysql2/promise`).
+* **Security:** JSON Web Tokens (JWT), BCryptJS.
+* **Deployment:** Railway / Vercel ready.
 
 ---
 
@@ -57,60 +50,58 @@ Summit-Hub/
 ├── database/
 │   └── setup.sql           # Database schema definition and seed data
 ├── public/                 # Static frontend client code
-│   ├── admin-login.html    # Admin login page
-│   ├── admin.html          # Admin dashboard (schedule & speaker manager)
-│   ├── speaker-login.html  # Speaker authentication
-│   ├── speaker-dashboard.html # Speaker slide upload & profile manager
 │   ├── index.html          # Main attendee schedule display
-│   ├── style.css           # App stylesheet (Flexbox/Grid structure)
+│   ├── admin-login.html    # Admin authentication
+│   ├── admin.html          # Admin dashboard (schedule, halls & speakers)
+│   ├── speaker-login.html  # Speaker authentication page
+│   ├── speaker-dashboard.html # Speaker upload panel & profile updates
+│   ├── style.css           # Modern CSS variables and app styling
 │   └── *.js                # Client logic handlers
-├── uploads/                # Structured repository for uploaded slide files
-├── .env                    # Application config & secrets (ignored by git)
-├── server.js               # Central Node.js Express server & REST API
+├── uploads/                # Repository for uploaded slide files (git-ignored)
+├── .env                    # Config & database credentials (git-ignored)
+├── server.js               # Central Node.js Express server & security routing
 ├── test-system.js          # Browser automated system testing suite
 └── package.json            # Dependencies and start scripts
 ```
 
 ---
 
-## Installation
+## Installation & Setup
 
-1. Clone the repository:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Sarvan-12/Summit-Hub.git
+   cd Summit-Hub
+   ```
 
-```
-git clone https://github.com/Sarvan-12/Summit-Hub.git
-```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-2. Navigate to the project folder:
+3. **Configure Environment Variables:**
+   Create a `.env` file in the root directory:
+   ```env
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=your_mysql_password
+   DB_NAME=conference_portal
+   PORT=3000
+   NODE_ENV=development
+   JWT_SECRET=your-jwt-secret-key
+   ADMIN_USER=admin
+   ADMIN_PASSWORD=admin123
+   ```
 
-```
-cd Summit-Hub
-```
+4. **Initialize Database:**
+   Import the schema and seed data from `database/setup.sql` into your MySQL server.
 
-3. Install dependencies:
+5. **Start Server:**
+   ```bash
+   # Production mode
+   npm start
 
-```
-npm install
-```
+   # Development mode (nodemon)
+   npm run dev
+   ```
 
-4. Run the application:
-
-```
-npm start
-```
-
----
-
-## Future Scope
-
-* User authentication and role management
-* Real-time features and notifications
-* Advanced dashboard and analytics
-* AI-based recommendations and automation
-* Mobile-friendly enhancements
-
----
-
-## Author
-
-* **Sarvan D Suvarna**
