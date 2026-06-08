@@ -223,7 +223,7 @@ app.get('/api/halls', async (req, res) => {
 // Get all speakers
 app.get('/api/speakers', async (req, res) => {
   try {
-    const [rows] = await db.execute('SELECT * FROM speakers ORDER BY speaker_code');
+    const [rows] = await db.execute('SELECT speaker_id, speaker_code, full_name, email, title, bio, profile_image FROM speakers ORDER BY speaker_code');
     res.json(rows);
   } catch (error) {
     console.error('Error fetching speakers:', error);
@@ -269,7 +269,7 @@ app.post('/api/speakers', authenticateAdmin, async (req, res) => {
 app.get('/api/schedule', async (req, res) => {
   try {
     let sql = `
-      SELECT s.*, h.hall_name, ts.day_number, ts.slot_name, ts.start_time, ts.end_time, sp.full_name AS speaker_name
+      SELECT s.*, h.hall_name, ts.day_number, ts.slot_name, ts.start_time, ts.end_time, sp.full_name AS speaker_name, sp.title AS speaker_title
       FROM schedules s
       JOIN halls h ON s.hall_id = h.hall_id
       JOIN time_slots ts ON s.slot_id = ts.slot_id
@@ -761,7 +761,7 @@ async function startServer() {
 app.get('/api/speakers/:id', async (req, res) => {
     try {
         const [rows] = await db.execute(
-            'SELECT * FROM speakers WHERE speaker_id = ?',
+            'SELECT speaker_id, speaker_code, full_name, email, title, bio, profile_image FROM speakers WHERE speaker_id = ?',
             [req.params.id]
         );
         if (rows.length === 0) {

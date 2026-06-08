@@ -305,7 +305,6 @@ class ConferenceSchedule {
             document.getElementById('modal-speaker-title').textContent = speaker.title || speaker.speaker_title;
             document.getElementById('modal-speaker-bio').textContent = speaker.bio || speaker.speaker_bio || 'No biography available.';
             document.getElementById('modal-speaker-email').textContent = speaker.email;
-            document.getElementById('modal-speaker-phone').textContent = speaker.phone || 'Not provided';
             
             // Display speaker sessions
             const sessionsContainer = document.getElementById('speaker-sessions-list');
