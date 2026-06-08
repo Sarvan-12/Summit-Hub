@@ -789,7 +789,7 @@ app.delete('/api/speakers/:id', authenticateAdmin, async (req, res) => {
 // Update speaker
 app.put('/api/speakers/:id', authenticateAdmin, async (req, res) => {
     try {
-        const { full_name, email, phone, title, bio } = req.body;
+        const { full_name, email, phone, title, bio, password } = req.body;
         
         // Server-side input validation
         if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2) {
@@ -801,15 +801,26 @@ app.put('/api/speakers/:id', authenticateAdmin, async (req, res) => {
             return res.status(400).json({ error: 'Please provide a valid email address' });
         }
 
-        const [result] = await db.execute(
-            `UPDATE speakers SET full_name=?, email=?, phone=?, title=?, bio=? WHERE speaker_id=?`,
-            [full_name, email, phone, title, bio, req.params.id]
-        );
+        let result;
+        if (password && password.trim().length >= 6) {
+            const passwordHash = await bcrypt.hash(password, 10);
+            [result] = await db.execute(
+                `UPDATE speakers SET full_name=?, email=?, phone=?, title=?, bio=?, password_hash=? WHERE speaker_id=?`,
+                [full_name, email, phone, title, bio, passwordHash, req.params.id]
+            );
+        } else {
+            [result] = await db.execute(
+                `UPDATE speakers SET full_name=?, email=?, phone=?, title=?, bio=? WHERE speaker_id=?`,
+                [full_name, email, phone, title, bio, req.params.id]
+            );
+        }
+
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Speaker not found' });
         }
         res.json({ success: true });
     } catch (err) {
+        console.error('Update speaker error:', err);
         res.status(500).json({ error: 'Failed to update speaker' });
     }
 });
