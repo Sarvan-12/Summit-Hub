@@ -18,7 +18,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-i
 function authenticateAdmin(req, res, next) {
     try {
         const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
+        const token = (authHeader && authHeader.split(' ')[1]) || req.cookies.token;
         if (!token) return res.status(401).json({ error: 'Access token required' });
 
         const decoded = jwt.verify(token, JWT_SECRET);
@@ -35,7 +35,7 @@ function authenticateAdmin(req, res, next) {
 function authenticateSpeaker(req, res, next) {
     try {
         const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
+        const token = (authHeader && authHeader.split(' ')[1]) || req.cookies.token;
         if (!token) return res.status(401).json({ error: 'Access token required' });
 
         const decoded = jwt.verify(token, JWT_SECRET);
@@ -52,6 +52,49 @@ function authenticateSpeaker(req, res, next) {
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Custom Cookie Parser Middleware
+app.use((req, res, next) => {
+    const list = {};
+    const rc = req.headers.cookie;
+    if (rc) {
+        rc.split(';').forEach((cookie) => {
+            const parts = cookie.split('=');
+            list[parts.shift().trim()] = decodeURI(parts.join('='));
+        });
+    }
+    req.cookies = list;
+    next();
+});
+
+// Admin and Speaker page protection interceptor
+app.use((req, res, next) => {
+    const cleanPath = req.path.toLowerCase();
+    if (cleanPath === '/admin.html' || cleanPath === '/admin') {
+        const token = req.cookies.token;
+        if (!token) return res.redirect('/admin-login.html');
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            if (decoded.role !== 'admin') return res.redirect('/admin-login.html');
+            return res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+        } catch (e) {
+            return res.redirect('/admin-login.html');
+        }
+    }
+    if (cleanPath === '/speaker-dashboard.html' || cleanPath === '/speaker-dashboard') {
+        const token = req.cookies.token;
+        if (!token) return res.redirect('/speaker-login.html');
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            if (decoded.role !== 'speaker' && decoded.role !== 'admin') return res.redirect('/speaker-login.html');
+            return res.sendFile(path.join(__dirname, 'public', 'speaker-dashboard.html'));
+        } catch (e) {
+            return res.redirect('/speaker-login.html');
+        }
+    }
+    next();
+});
+
 app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -188,10 +231,10 @@ app.get('/api/speakers', async (req, res) => {
   }
 });
 
-// Add new speaker (auto-generate speaker_code)
+// Add new speaker (auto-generate speaker_code and password_hash)
 app.post('/api/speakers', authenticateAdmin, async (req, res) => {
     try {
-        const { full_name, email, phone, title, bio } = req.body;
+        const { full_name, email, phone, title, bio, password } = req.body;
         
         // Server-side input validation
         if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2) {
@@ -206,12 +249,17 @@ app.post('/api/speakers', authenticateAdmin, async (req, res) => {
         const [rows] = await db.execute('SELECT MAX(speaker_id) AS maxId FROM speakers');
         const nextId = (rows[0].maxId || 0) + 1;
         const speakerCode = 'SP' + String(nextId).padStart(3, '0');
+
+        // Hash provided password or default to speakerCode
+        const plainPassword = (password && password.trim().length >= 6) ? password : speakerCode;
+        const passwordHash = await bcrypt.hash(plainPassword, 10);
+
         await db.execute(
-            `INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio)
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [speakerCode, full_name, email, phone, title, bio]
+            `INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio, password_hash)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [speakerCode, full_name, email, phone, title, bio, passwordHash]
         );
-        res.json({ success: true, speaker_code: speakerCode });
+        res.json({ success: true, speaker_code: speakerCode, temporary_password: plainPassword });
     } catch (err) {
         console.error('Add speaker error:', err);
         res.status(500).json({ error: 'Failed to add speaker' });
@@ -431,9 +479,9 @@ app.get('/api/timeslots', async (req, res) => {
 // Speaker Authentication Route
 app.post('/api/speaker/login', async (req, res) => {
     try {
-        const { speakerCode } = req.body;
-        if (!speakerCode) {
-            return res.status(400).json({ error: 'Speaker code is required' });
+        const { speakerCode, password } = req.body;
+        if (!speakerCode || !password) {
+            return res.status(400).json({ error: 'Speaker code and password are required' });
         }
         const [speakers] = await db.execute(
             'SELECT * FROM speakers WHERE speaker_code = ?',
@@ -443,6 +491,20 @@ app.post('/api/speaker/login', async (req, res) => {
             return res.status(404).json({ error: 'Invalid speaker code' });
         }
         const speaker = speakers[0];
+
+        // Check password matching
+        if (speaker.password_hash) {
+            const passwordMatch = await bcrypt.compare(password, speaker.password_hash);
+            if (!passwordMatch) {
+                return res.status(401).json({ error: 'Invalid credentials' });
+            }
+        } else {
+            // Migrated account check: allow logging in with speaker code as password
+            if (password !== speakerCode) {
+                return res.status(401).json({ error: 'Invalid credentials. Hint: For migrated accounts, use your Speaker Code as the password.' });
+            }
+        }
+
         const [schedule] = await db.execute(`
             SELECT 
                 sch.session_title,
@@ -466,6 +528,14 @@ app.post('/api/speaker/login', async (req, res) => {
             JWT_SECRET,
             { expiresIn: '12h' }
         );
+
+        // Set secure HTTP-only cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 12 * 60 * 60 * 1000 // 12 hours
+        });
 
         res.json({
             token,
@@ -862,10 +932,25 @@ app.post('/api/admin/login', async (req, res) => {
             JWT_SECRET,
             { expiresIn: '12h' }
         );
+        
+        // Set secure HTTP-only cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 12 * 60 * 60 * 1000 // 12 hours
+        });
+
         res.json({ success: true, token });
     } else {
         res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
+});
+
+// Logout Route
+app.post('/api/logout', (req, res) => {
+    res.clearCookie('token');
+    res.json({ success: true });
 });
 
 

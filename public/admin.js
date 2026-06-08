@@ -575,6 +575,17 @@ async deleteHall(hallId) {
         .catch(() => this.showToast('Reset failed.', 'error'));
     },
 
+    async logout() {
+        try {
+            await fetch('/api/logout', { method: 'POST' });
+        } catch (err) {
+            console.warn('Logout request failed:', err);
+        }
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminToken');
+        window.location.href = 'admin-login.html';
+    },
+
     // --- Toasts ---
     showToast(msg, type = '') {
         const container = document.getElementById('toast-container');

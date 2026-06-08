@@ -32,9 +32,15 @@ class SpeakerLogin {
         event.preventDefault();
         
         const speakerCode = document.getElementById('speakerCode').value.trim();
+        const password = document.getElementById('password').value.trim();
         
         if (!speakerCode) {
             this.showError('Please enter your speaker code');
+            return;
+        }
+        
+        if (!password) {
+            this.showError('Please enter your password');
             return;
         }
         
@@ -53,7 +59,7 @@ class SpeakerLogin {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ speakerCode })
+                body: JSON.stringify({ speakerCode, password })
             });
             
             const data = await response.json();
@@ -67,7 +73,7 @@ class SpeakerLogin {
                 // Redirect to dashboard
                 window.location.href = 'speaker-dashboard.html';
             } else {
-                this.showError(data.error || 'Invalid speaker code');
+                this.showError(data.error || 'Invalid credentials');
             }
         } catch (error) {
             console.error('Login error:', error);

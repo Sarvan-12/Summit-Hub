@@ -440,7 +440,12 @@ class SpeakerDashboard {
 }
 
 // Global functions
-function logout() {
+async function logout() {
+    try {
+        await fetch('/api/logout', { method: 'POST' });
+    } catch (err) {
+        console.warn('Logout request failed:', err);
+    }
     localStorage.removeItem('speakerData');
     localStorage.removeItem('speakerToken');
     localStorage.removeItem('speakerCode');
