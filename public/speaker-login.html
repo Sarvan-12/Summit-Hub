@@ -49,12 +49,41 @@
             </form>
             
             <div class="login-help">
-                <p>Don't have your speaker code? <a href="mailto:admin@conference.com">Contact Admin</a></p>
+                <p>Forgot password or speaker code? <a href="#" id="forgotHelpLink">Request Recovery</a></p>
                 <a href="index.html" class="back-link">← Back to Schedule</a>
             </div>
         </div>
         
         <div id="errorMessage" class="error-message" style="display: none;"></div>
+    </div>
+    
+    <!-- Recovery Modal -->
+    <div id="recoveryModal" class="modal" style="display: none;">
+        <div class="modal-content" style="position: relative;">
+            <span class="close-recovery" id="closeRecoveryBtn" style="position: absolute; top: 10px; right: 14px; font-size: 1.8rem; cursor: pointer; font-family: 'Special Elite', monospace;">&times;</span>
+            <div class="login-header" style="margin-bottom: 20px;">
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 800;"><span class="material-icons">help_outline</span> Account Recovery</h3>
+                <p style="font-size: 0.9rem; margin-top: 4px;">Submit your details and the admin will reset your code or password.</p>
+            </div>
+            <form id="recoveryForm" class="login-form">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="recoveryName" style="font-family: 'Special Elite', monospace; font-size: 0.9rem; display: block; margin-bottom: 4px;">Full Name *</label>
+                    <input type="text" id="recoveryName" required placeholder="Enter your full name" style="width:100%; padding:10px; border-radius:4px; border: 1.5px solid #2c2a29;">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="recoveryEmail" style="font-family: 'Special Elite', monospace; font-size: 0.9rem; display: block; margin-bottom: 4px;">Email Address *</label>
+                    <input type="email" id="recoveryEmail" required placeholder="Enter your registered email" style="width:100%; padding:10px; border-radius:4px; border: 1.5px solid #2c2a29;">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="recoveryMessage" style="font-family: 'Special Elite', monospace; font-size: 0.9rem; display: block; margin-bottom: 4px;">How can we help? (Optional)</label>
+                    <textarea id="recoveryMessage" rows="3" placeholder="e.g. Forgot password, need my speaker code..." style="width:100%; padding:10px; border-radius:4px; border: 1.5px solid #2c2a29; font-family: inherit; font-size: 0.9rem;"></textarea>
+                </div>
+                <button type="submit" class="login-submit-btn" id="recoverySubmitBtn" style="width: 100%; margin-top: 10px; font-family: 'Special Elite', monospace; padding: 10px; border: 2px solid #2c2a29; border-radius: 4px; background-color: #AEE2FF; cursor: pointer; box-shadow: 2px 2px 0px #2c2a29;">
+                    <span class="btn-text">Send Request</span>
+                    <span class="btn-loader" style="display: none;"><span class="material-icons">sync</span> Sending...</span>
+                </button>
+            </form>
+        </div>
     </div>
     
     <script src="speaker-login.js"></script>

@@ -964,6 +964,50 @@ app.post('/api/logout', (req, res) => {
     res.json({ success: true });
 });
 
+// Submit Password/Code Recovery Request
+app.post('/api/recovery-requests', async (req, res) => {
+    try {
+        const { full_name, email, message } = req.body;
+        if (!full_name || !email) {
+            return res.status(400).json({ error: 'Name and email are required' });
+        }
+        await db.execute(
+            `INSERT INTO recovery_requests (full_name, email, message) VALUES (?, ?, ?)`,
+            [full_name, email, message]
+        );
+        res.json({ success: true, message: 'Request submitted successfully!' });
+    } catch (err) {
+        console.error('Submit recovery request error:', err);
+        res.status(500).json({ error: 'Failed to submit request' });
+    }
+});
+
+// Get Pending Recovery Requests (Admin Only)
+app.get('/api/admin/recovery-requests', authenticateAdmin, async (req, res) => {
+    try {
+        const [rows] = await db.execute(
+            `SELECT * FROM recovery_requests WHERE status = 'pending' ORDER BY created_at DESC`
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error('Fetch recovery requests error:', err);
+        res.status(500).json({ error: 'Failed to fetch requests' });
+    }
+});
+
+// Resolve Recovery Request (Admin Only)
+app.post('/api/admin/recovery-requests/:id/resolve', authenticateAdmin, async (req, res) => {
+    try {
+        await db.execute(
+            `UPDATE recovery_requests SET status = 'resolved' WHERE request_id = ?`,
+            [req.params.id]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Resolve recovery request error:', err);
+        res.status(500).json({ error: 'Failed to resolve request' });
+    }
+});
 
 app.get('/api/admin/files', authenticateAdmin, async (req, res) => {
     try {

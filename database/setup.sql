@@ -88,6 +88,16 @@ CREATE TABLE uploaded_files (
     FOREIGN KEY (hall_id) REFERENCES halls(hall_id) ON DELETE CASCADE
 );
 
+-- Recovery Requests table
+CREATE TABLE IF NOT EXISTS recovery_requests (
+  request_id INT PRIMARY KEY AUTO_INCREMENT,
+  full_name VARCHAR(200) NOT NULL,
+  email VARCHAR(150) NOT NULL,
+  message TEXT,
+  status ENUM('pending', 'resolved') DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert conferences
 INSERT INTO conferences (conference_id, name, start_date, end_date, total_days, description) VALUES
 (1, 'Summit Hub 2025', '2025-09-14 18:30:00', '2025-09-17 18:30:00', 4, 'Annual technology conference focusing on AI, Cloud, and Digital Transformation');

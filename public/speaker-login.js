@@ -10,7 +10,37 @@ class SpeakerLogin {
         
         // Auto-format speaker code input
         const codeInput = document.getElementById('speakerCode');
-        codeInput.addEventListener('input', this.formatSpeakerCode.bind(this));
+        if (codeInput) {
+            codeInput.addEventListener('input', this.formatSpeakerCode.bind(this));
+        }
+
+        // Recovery Modal Bindings
+        const forgotHelpLink = document.getElementById('forgotHelpLink');
+        const recoveryModal = document.getElementById('recoveryModal');
+        const closeRecoveryBtn = document.getElementById('closeRecoveryBtn');
+        const recoveryForm = document.getElementById('recoveryForm');
+
+        if (forgotHelpLink && recoveryModal) {
+            forgotHelpLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                recoveryModal.style.display = 'flex';
+            });
+        }
+
+        if (closeRecoveryBtn && recoveryModal) {
+            closeRecoveryBtn.addEventListener('click', () => {
+                recoveryModal.style.display = 'none';
+            });
+            recoveryModal.addEventListener('click', (e) => {
+                if (e.target === recoveryModal) {
+                    recoveryModal.style.display = 'none';
+                }
+            });
+        }
+
+        if (recoveryForm) {
+            recoveryForm.addEventListener('submit', this.handleRecoverySubmit.bind(this));
+        }
     }
     
     formatSpeakerCode(event) {
@@ -93,6 +123,45 @@ class SpeakerLogin {
             btnLoader.style.display = 'inline';
             submitBtn.disabled = true;
         } else {
+            btnText.style.display = 'inline';
+            btnLoader.style.display = 'none';
+            submitBtn.disabled = false;
+        }
+    }
+
+    async handleRecoverySubmit(event) {
+        event.preventDefault();
+        const submitBtn = document.getElementById('recoverySubmitBtn');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoader = submitBtn.querySelector('.btn-loader');
+        
+        const full_name = document.getElementById('recoveryName').value.trim();
+        const email = document.getElementById('recoveryEmail').value.trim();
+        const message = document.getElementById('recoveryMessage').value.trim();
+
+        btnText.style.display = 'none';
+        btnLoader.style.display = 'inline';
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/recovery-requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ full_name, email, message })
+            });
+
+            if (response.ok) {
+                alert('Recovery request sent to the admin successfully!');
+                document.getElementById('recoveryModal').style.display = 'none';
+                document.getElementById('recoveryForm').reset();
+            } else {
+                const err = await response.json();
+                alert('Failed to send request: ' + (err.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Recovery error:', error);
+            alert('Network error. Please try again.');
+        } finally {
             btnText.style.display = 'inline';
             btnLoader.style.display = 'none';
             submitBtn.disabled = false;
