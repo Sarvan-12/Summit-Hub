@@ -43,9 +43,6 @@ const adminApp = {
             if (this.dataset.section === 'files') {
                 loadUploadedFiles();
             }
-            if (this.dataset.section === 'help') {
-                loadHelpRequests();
-            }
         });
     });
 },
@@ -688,65 +685,4 @@ async function deleteAdminFile(fileId) {
         alert('Delete failed: ' + err.message);
     }
 }
-
-
-async function loadHelpRequests() {
-    const container = document.getElementById('help-requests-container');
-    if (!container) return;
-    container.innerHTML = '<p>Loading recovery requests...</p>';
-    try {
-        const res = await fetchWithAuth('/api/admin/recovery-requests');
-        const requests = await res.json();
-        if (!requests.length) {
-            container.innerHTML = '<p>No pending recovery requests. All caught up! 🎉</p>';
-            return;
-        }
-
-        container.innerHTML = `
-            <table class="files-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Message</th>
-                        <th>Requested At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${requests.map(req => `
-                        <tr>
-                            <td><strong>${req.full_name}</strong></td>
-                            <td><a href="mailto:${req.email}">${req.email}</a></td>
-                            <td><em>${req.message || '(No message)'}</em></td>
-                            <td>${new Date(req.created_at).toLocaleString()}</td>
-                            <td>
-                                <button class="btn btn-secondary" onclick="resolveHelpRequest(${req.request_id})"><span class="material-icons">check_circle</span> Resolve</button>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    } catch (err) {
-        container.innerHTML = '<p>Error loading recovery requests.</p>';
-    }
-}
-
-async function resolveHelpRequest(requestId) {
-    if (!confirm('Mark this request as resolved?')) return;
-    try {
-        const res = await fetchWithAuth(`/api/admin/recovery-requests/${requestId}/resolve`, {
-            method: 'POST'
-        });
-        if (res.ok) {
-            loadHelpRequests();
-        } else {
-            alert('Failed to resolve request.');
-        }
-    } catch (err) {
-        alert('Error: ' + err.message);
-    }
-}
-
 document.addEventListener('DOMContentLoaded', () => adminApp.init());
