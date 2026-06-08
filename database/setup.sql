@@ -87,97 +87,77 @@ CREATE TABLE uploaded_files (
     FOREIGN KEY (hall_id) REFERENCES halls(hall_id) ON DELETE CASCADE
 );
 
+-- Insert conferences
+INSERT INTO conferences (conference_id, name, start_date, end_date, total_days, description) VALUES
+(1, 'Summit Hub 2025', '2025-09-14 18:30:00', '2025-09-17 18:30:00', 4, 'Annual technology conference focusing on AI, Cloud, and Digital Transformation');
 
--- Insert sample conference
-INSERT INTO conferences (name, start_date, end_date, total_days, description) VALUES
-('Tech Innovation Summit 2025', '2025-03-15', '2025-03-18', 4, 'Annual technology conference focusing on AI, Cloud, and Digital Transformation');
+-- Insert halls
+INSERT INTO halls (hall_id, conference_id, hall_name, capacity, location) VALUES
+(1, 1, 'Hall A', 500, 'Ground Floor - East Wing'),
+(2, 1, 'Hall B', 300, 'Ground Floor - West Wing'),
+(3, 1, 'Hall C', 200, 'First Floor - North'),
+(4, 1, 'Hall D', 150, 'First Floor - South');
 
--- Insert sample halls
-INSERT INTO halls (conference_id, hall_name, capacity, location) VALUES
-(1, 'Hall A', 500, 'Ground Floor - East Wing'),
-(1, 'Hall B', 300, 'Ground Floor - West Wing'),
-(1, 'Hall C', 200, 'First Floor - North'),
-(1, 'Hall D', 150, 'First Floor - South');
+-- Insert speakers
+INSERT INTO speakers (speaker_id, speaker_code, full_name, email, phone, title, bio, profile_image) VALUES
+(1, 'SP001', 'Sarvan D Suvarna', 'sarvan.suvarna@email.com', '8618827584', 'AI-DS Engineer', 'Passionate about AI and data-driven solutions.', NULL),
+(2, 'SP002', 'Paresh R Nayak', 'paresh.nayak@email.com', '7892276218', 'IoT Architect', 'Works on connected devices and smart ecosystems.', NULL),
+(3, 'SP003', 'Adithya B Hanglur', 'adithya.hanglur@email.com', '7892619743', 'Cloud Engineer', 'Working on scalable cloud-based applications.', NULL),
+(4, 'SP004', 'Varun Bhat', 'varun.bhat@email.com', '7348929738', 'Full Stack Developer', 'Works with modern web and mobile frameworks.', NULL),
+(5, 'SP005', 'Puneeth', 'puneeth@email.com', '9242497946', 'Cloud Security Analyst', 'Focused on cloud-native security.', NULL),
+(6, 'SP006', 'Kaushik Poojary', 'kaushik.poojary@email.com', '9019367791', 'Robotics Engineer', 'Designing and testing autonomous systems.', NULL),
+(7, 'SP007', 'Prajwal Y', 'prajwal.y@email.com', '8497100162', 'AI Researcher', 'Interested in computer vision and NLP.', NULL),
+(8, 'SP008', 'Vishwas', 'vishwas@email.com', '8050021739', 'Game Designer', 'Building interactive experiences for players.', NULL),
+(9, 'SP009', 'K Vivek Kamath', 'vivek.kamath@email.com', '8105699135', 'Blockchain Developer', 'Exploring decentralized finance and smart contracts.', NULL),
+(10, 'SP010', 'Kevin Mendonca', 'kevin.mendonca@email.com', '8147282379', 'Game Developer', 'Building immersive gaming experiences.', NULL),
+(11, 'SP011', 'Shobith S', 'shobith.s@email.com', '8618987158', 'Data Scientist', 'Works on big data and applied machine learning.', NULL),
+(12, 'SP012', 'Vivan Sanjay Nayak', 'vivan.nayak@email.com', '7411135027', 'Tech Entrepreneur', 'Exploring startups in AI and SaaS.', NULL),
+(13, 'SP013', 'Athul Nayak', 'athul.nayak@email.com', '7411935492', 'Data Engineer', 'Building robust data pipelines for analytics.', NULL),
+(14, 'SP014', 'Pramith Nayak', 'pramith.nayak@email.com', '9663193782', 'Web Developer', 'Expert in MERN stack applications.', NULL),
+(15, 'SP015', 'Akshay Kumar', 'akshay.kumar@email.com', '9972147956', 'Software Developer', 'Specializes in backend development and APIs.', NULL),
+(16, 'SP016', 'Prathvi V Suvarna', 'prathvi.suvarna@email.com', '8792049478', 'AR/VR Specialist', 'Works on immersive AR experiences.', NULL),
+(17, 'SP017', 'Kotian Shubham', 'shubham.kotian@email.com', '7338332785', 'DevOps Engineer', 'Specializes in CI/CD automation.', NULL),
+(18, 'SP018', 'Ayush M Anchan', 'ayush.anchan@email.com', '9743175964', 'Machine Learning Engineer', 'Works on predictive analytics and ML pipelines.', NULL),
+(19, 'SP019', 'Thilak', 'thilak@email.com', '9108407436', 'System Architect', 'Designs enterprise-level software systems.', NULL),
+(20, 'SP020', 'Manvith M Poojary', 'manvith.poojary@email.com', '9482409183', 'Mobile App Developer', 'Creating scalable mobile applications.', NULL);
 
--- Insert sample speakers
-INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio) VALUES
-('SP001', 'Dr. John Smith', 'john.smith@email.com', '+91 9876543210', 'AI & Machine Learning Expert', 'Leading AI researcher with 15+ years experience in deep learning and neural networks.'),
-('SP002', 'Mary Johnson', 'mary.johnson@email.com', '+91 9876543211', 'Cloud Architecture Specialist', 'Senior cloud architect helping enterprises migrate to modern cloud infrastructure.'),
-('SP003', 'Robert Brown', 'robert.brown@email.com', '+91 9876543212', 'Cybersecurity Consultant', 'Former government cybersecurity analyst now consulting for Fortune 500 companies.'),
-('SP004', 'Sarah Davis', 'sarah.davis@email.com', '+91 9876543213', 'Digital Transformation Leader', 'Driving digital innovation and transformation strategies across multiple industries.'),
-('SP005', 'David Wilson', 'david.wilson@email.com', '+91 9876543214', 'DevOps & Automation Expert', 'Specializes in CI/CD pipelines and infrastructure automation.'),
-('SP006', 'Lisa Chen', 'lisa.chen@email.com', '+91 9876543215', 'UX Design Director', 'Award-winning designer creating intuitive user experiences for global products.'),
-('SP007', 'Mike Garcia', 'mike.garcia@email.com', '+91 9876543216', 'Blockchain Developer', 'Building decentralized applications and smart contract solutions.'),
-('SP008', 'Anna Martinez', 'anna.martinez@email.com', '+91 9876543217', 'Data Science Manager', 'Leading data science teams in extracting business insights from big data.');
+-- Insert time slots
+INSERT INTO time_slots (slot_id, conference_id, day_number, start_time, end_time, slot_name, slot_order) VALUES
+(1, 1, 1, '10:00:00', '11:00:00', 'Opening Keynote', 1),
+(2, 1, 1, '11:30:00', '12:30:00', 'Morning Technical Session', 2),
+(3, 1, 1, '14:00:00', '15:00:00', 'Afternoon Workshop', 3),
+(4, 1, 1, '15:30:00', '16:30:00', 'Panel Discussion', 4),
+(5, 1, 2, '10:00:00', '11:00:00', 'Day 2 Keynote', 5),
+(6, 1, 2, '11:30:00', '12:30:00', 'Deep Dive Session 1', 6),
+(7, 1, 2, '14:00:00', '15:00:00', 'Deep Dive Session 2', 7),
+(8, 1, 2, '15:30:00', '16:30:00', 'Industry Roundtable', 8),
+(9, 1, 3, '10:00:00', '11:00:00', 'Innovation Showcase', 9),
+(10, 1, 3, '11:30:00', '12:30:00', 'Startup Presentations', 10),
+(11, 1, 3, '14:00:00', '15:00:00', 'Technology Trends', 11),
+(12, 1, 3, '15:30:00', '16:30:00', 'Networking Session', 12),
+(13, 1, 4, '10:00:00', '11:00:00', 'Future Technologies', 13),
+(14, 1, 4, '11:30:00', '12:30:00', 'Best Practices', 14),
+(15, 1, 4, '14:00:00', '15:00:00', 'Implementation Workshop', 15),
+(16, 1, 4, '15:30:00', '17:00:00', 'Closing Ceremony', 16);
 
-INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio) VALUES
-('SP009', 'Priya Sharma', 'priya.sharma@email.com', '+91 9876543218', 'IoT Solutions Architect', 'Expert in smart devices and IoT ecosystems.'),
-('SP010', 'Rahul Mehra', 'rahul.mehra@email.com', '+91 9876543219', 'Mobile App Developer', 'Building scalable mobile apps for startups and enterprises.'),
-('SP011', 'Emily Clark', 'emily.clark@email.com', '+91 9876543220', 'AI Ethics Researcher', 'Researching ethical implications of artificial intelligence.'),
-('SP012', 'Carlos Rivera', 'carlos.rivera@email.com', '+91 9876543221', 'Cloud Security Analyst', 'Specialist in securing cloud infrastructure.'),
-('SP013', 'Sofia Rossi', 'sofia.rossi@email.com', '+91 9876543222', 'Agile Coach', 'Helping teams adopt agile methodologies.'),
-('SP014', 'Tom Lee', 'tom.lee@email.com', '+91 9876543223', 'Full Stack Developer', 'Experienced in MERN and LAMP stacks.'),
-('SP015', 'Yuki Tanaka', 'yuki.tanaka@email.com', '+91 9876543224', 'Robotics Engineer', 'Designing and building autonomous robots.'),
-('SP016', 'Fatima Al-Farsi', 'fatima.alfarsi@email.com', '+91 9876543225', 'Big Data Analyst', 'Turning massive datasets into actionable insights.');
-
--- Insert time slots for 4 days
-INSERT INTO time_slots (conference_id, day_number, start_time, end_time, slot_name, slot_order) VALUES
--- Day 1
-(1, 1, '10:00:00', '11:00:00', 'Opening Keynote', 1), 
-(1, 1, '11:30:00', '12:30:00', 'Morning Technical Session', 2),
-(1, 1, '14:00:00', '15:00:00', 'Afternoon Workshop', 3),
-(1, 1, '15:30:00', '16:30:00', 'Panel Discussion', 4),
--- Day 2
-(1, 2, '10:00:00', '11:00:00', 'Day 2 Keynote', 5),
-(1, 2, '11:30:00', '12:30:00', 'Deep Dive Session 1', 6),
-(1, 2, '14:00:00', '15:00:00', 'Deep Dive Session 2', 7),
-(1, 2, '15:30:00', '16:30:00', 'Industry Roundtable', 8),
--- Day 3
-(1, 3, '10:00:00', '11:00:00', 'Innovation Showcase', 9),
-(1, 3, '11:30:00', '12:30:00', 'Startup Presentations', 10),
-(1, 3, '14:00:00', '15:00:00', 'Technology Trends', 11),
-(1, 3, '15:30:00', '16:30:00', 'Networking Session', 12),
--- Day 4 
-(1, 4, '10:00:00', '11:00:00', 'Future Technologies', 13),
-(1, 4, '11:30:00', '12:30:00', 'Best Practices', 14),
-(1, 4, '14:00:00', '15:00:00', 'Implementation Workshop', 15),
-(1, 4, '15:30:00', '17:00:00', 'Closing Ceremony', 16);
-
--- Insert sample schedules
-INSERT INTO schedules (conference_id, speaker_id, hall_id, slot_id, session_title) VALUES
--- Day 1
-(1, 1, 1, 1, 'The Future of Artificial Intelligence'),
-(1, 2, 2, 1, 'Cloud Computing Revolution'),
-(1, 3, 3, 1, 'Cybersecurity in Digital Age'),
-(1, 4, 4, 1, 'Digital Transformation Strategies'),
-
-(1, 5, 1, 2, 'DevOps Best Practices'),
-(1, 6, 2, 2, 'User Experience Design Principles'),
-(1, 7, 3, 2, 'Blockchain Applications'),
-(1, 8, 4, 2, 'Data Science in Business'),
-
--- Day 2
-(1, 2, 1, 5, 'Advanced Cloud Architectures'),
-(1, 3, 2, 5, 'Enterprise Security Frameworks'),
-(1, 4, 3, 5, 'Change Management in Digital Era'),
-(1, 1, 4, 5, 'Machine Learning Algorithms'),
-(1, 6, 1, 6, 'Design Thinking Workshop'),
-(1, 7, 2, 6, 'Smart Contracts Development'),
-(1, 8, 3, 6, 'Predictive Analytics'),
-(1, 5, 4, 6, 'Automated Testing Strategies'),
-(1, 9, 1, 9, 'IoT for Smart Cities'),
-(1, 10, 2, 9, 'Building Mobile Apps at Scale'),
-(1, 11, 3, 9, 'Ethics in AI: Challenges and Solutions'),
-(1, 12, 4, 9, 'Cloud Security Best Practices'),
-(1, 13, 1, 10, 'Agile Transformation Stories'),
-(1, 14, 2, 10, 'Modern Full Stack Development'),
-(1, 15, 3, 10, 'Robotics in Industry 4.0'),
-(1, 16, 4, 10, 'Big Data for Business Growth'),
-(1, 9, 1, 13, 'IoT Security Fundamentals'),
-(1, 10, 2, 13, 'Cross-Platform Mobile Development'),
-(1, 11, 3, 13, 'Responsible AI Deployment'),
-(1, 12, 4, 13, 'Securing Multi-Cloud Environments'),
-(1, 13, 1, 14, 'Scaling Agile in Large Organizations'),
-(1, 14, 2, 14, 'Serverless Architectures'),
-(1, 15, 3, 14, 'Robotics for Healthcare'),
-(1, 16, 4, 14, 'Data Visualization Techniques');
+-- Insert schedules
+INSERT INTO schedules (schedule_id, conference_id, speaker_id, hall_id, slot_id, session_title, session_description, status) VALUES
+(1, 1, 1, 1, 1, 'AI-Driven Solutions for the Future', NULL, 'confirmed'),
+(3, 1, 3, 3, 1, 'Scalable Cloud Applications', NULL, 'confirmed'),
+(4, 1, 4, 4, 1, 'Modern Web & Mobile Development', NULL, 'confirmed'),
+(5, 1, 5, 1, 2, 'Securing the Cloud-Native World', NULL, 'confirmed'),
+(6, 1, 6, 2, 2, 'Autonomous Robotics in Action', NULL, 'confirmed'),
+(7, 1, 7, 3, 2, 'Advances in Computer Vision & NLP', NULL, 'confirmed'),
+(8, 1, 8, 4, 2, 'Designing Engaging Game Experiences', NULL, 'confirmed'),
+(9, 1, 9, 1, 5, 'Smart Contracts & DeFi Development', NULL, 'confirmed'),
+(10, 1, 10, 2, 5, 'Immersive Game Development Techniques', NULL, 'confirmed'),
+(11, 1, 11, 3, 5, 'Applied Machine Learning at Scale', NULL, 'confirmed'),
+(12, 1, 12, 4, 5, 'From AI to SaaS: The Startup Journey', NULL, 'confirmed'),
+(13, 1, 13, 1, 6, 'Data Pipelines for Analytics', NULL, 'confirmed'),
+(14, 1, 14, 2, 6, 'Next-Gen MERN Stack Applications', NULL, 'confirmed'),
+(15, 1, 15, 3, 6, 'Optimizing Backend Systems & APIs', NULL, 'confirmed'),
+(16, 1, 16, 4, 6, 'Building Immersive AR Experiences', NULL, 'confirmed'),
+(17, 1, 17, 1, 9, 'CI/CD and DevOps Automation', NULL, 'confirmed'),
+(18, 1, 18, 2, 9, 'Predictive Analytics with ML Pipelines', NULL, 'confirmed'),
+(19, 1, 19, 3, 9, 'Enterprise Software Architecture', NULL, 'confirmed'),
+(20, 1, 20, 4, 9, 'Scaling Mobile Applications', NULL, 'confirmed');
